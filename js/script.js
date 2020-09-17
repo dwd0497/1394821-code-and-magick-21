@@ -1,23 +1,27 @@
 "use strict";
 
+const LEFT_SPEED = 5;
+const RIGHT_SPEED = 2;
+const WIZARD_PROPORTION = 1.337;
+const HEIGHT_DEVIDER = 3;
+
 const fireballSize = 22;
-
-function getFireballSpeed(rightWind) {
-    return rightWind ? 2 : 5;
-}
-
 const wizardWidth = 70;
 
-function getWizardHeight() {
-    return wizardWidth * 1.337;
+window.wizardSpeed = 3;
+
+function getFireballSpeed(rightWind) {
+  return rightWind ? RIGHT_SPEED : LEFT_SPEED;
 }
 
-var wizardSpeed = 3;
+function getWizardHeight() {
+  return wizardWidth * WIZARD_PROPORTION;
+}
 
 function getWizardX(positionX) {
-    return positionX / 2 - wizardWidth / 2;
+  return (positionX - wizardWidth) / 2;
 }
 
 function getWizardY(positionY) {
-    return positionY / 3;
+  return positionY / HEIGHT_DEVIDER;
 }
