@@ -1,76 +1,105 @@
 "use strict";
 
-const CLOUD_WIDTH = 420;
-const CLOUD_HEIGHT = 270;
-const CLOUD_X = 100;
-const CLOUD_Y = 10;
+const User = {
+  NAME: `Вы`,
+  COLOR: `rgba(255, 0, 0, 1)`
+};
+
+const Cloud = {
+  WIDTH: 420,
+  HEIGHT: 270,
+  X: 100,
+  Y: 10,
+  BACKGROUND_COLOR: `white`,
+  SHADOW_COLOR: `rgba(0, 0, 0, 0.7)`
+};
+
+const Bar = {
+  WIDTH: 40,
+  MAX_HEIGHT: 110,
+  SPACE_BETWEEN: 50,
+  getPositionX: (i) => {
+    return Cloud.X + GAP + (Bar.SPACE_BETWEEN + Bar.WIDTH) * i;
+  },
+  getPositionY: () => {
+    return Cloud.Y + Cloud.HEIGHT - GAP - Font.HEIGHT;
+  },
+  getHeight: (time, maxTime) => {
+    return (Bar.MAX_HEIGHT * time) / maxTime;
+  }
+};
+
+const Font = {
+  HEIGHT: 20,
+  COLOR: `black`,
+  FAMILY: `16px PT Mono`,
+  BASELINE: `hanging`
+};
+
 const GAP = 20;
-const TEXT_HEIGHT = 20;
-const BAR_WIDTH = 40;
-const SPACE_BETWEEN_COLUMNS = 50;
-const MAX_BAR_HEIGHT = 130;
 
 function renderRect(ctx, x, y, width, height, color) {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, width, height);
 }
 
-function renderText(ctx, text, x, y) {
+function renderText(ctx, text, x, y, color = `black`) {
+  ctx.fillStyle = color;
+  ctx.font = Font.FAMILY;
+  ctx.textBaseline = Font.BASELINE;
   ctx.fillText(text, x, y);
 }
 
 function getMaxTime(times) {
-  let maxTime = times[0];
-  for (let i = 0; i < times.length; i++) {
-    if (times[i] > maxTime) {
-      maxTime = times[i];
-    }
+  return Math.max(...times);
+}
+
+function renderCloud(ctx) {
+  renderRect(ctx, Cloud.X + GAP, Cloud.Y + GAP, Cloud.WIDTH, Cloud.HEIGHT, Cloud.SHADOW_COLOR);
+  renderRect(ctx, Cloud.X, Cloud.Y, Cloud.WIDTH, Cloud.HEIGHT, Cloud.BACKGROUND_COLOR);
+}
+
+function getRandomNumber(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function getBlueColor() {
+  return `hsl(255, ${getRandomNumber(5, 255)}%, 50%)`;
+}
+
+function getColumnColor(name) {
+  return name === User.NAME ? User.COLOR : getBlueColor();
+}
+
+function renderColumn(ctx, name, time, i, maxTime) {
+  ctx.fillStyle = getColumnColor(name);
+  renderRect(ctx, Bar.getPositionX(i), Bar.getPositionY(), Bar.WIDTH, -Bar.getHeight(time, maxTime));
+}
+
+function renderColumnLabels(ctx, name, time, maxTime, i) {
+  renderText(ctx, name, Bar.getPositionX(i), Bar.getPositionY() + Font.HEIGHT);
+  renderText(ctx, time, Bar.getPositionX(i), Bar.getPositionY() - GAP - Bar.getHeight(time, maxTime)
+  );
+}
+
+function renderColumns(ctx, names, times) {
+  const maxTime = getMaxTime(times);
+  for (let i = 0; i < names.length; i++) {
+    const name = names[i];
+    const time = times[i].toFixed(0);
+    renderColumn(ctx, name, time, i, maxTime);
+    renderColumnLabels(ctx, name, time, maxTime, i);
   }
-  return maxTime;
 }
 
 window.renderStatistics = function (ctx, names, times) {
-  renderRect(ctx, CLOUD_X + GAP, CLOUD_Y + GAP, CLOUD_WIDTH, CLOUD_HEIGHT, `rgba(0, 0, 0, 0.7)`);
-  renderRect(ctx, CLOUD_X, CLOUD_Y, CLOUD_WIDTH, CLOUD_HEIGHT, `white`);
 
-  ctx.fillStyle = `black`;
-  ctx.font = `16px PT Mono`;
-  ctx.textBaseline = `hanging`;
-  renderText(ctx, `Ура вы победили!`, CLOUD_X + GAP, CLOUD_Y + GAP);
-  renderText(ctx, `Список результатов:`, CLOUD_X + GAP, CLOUD_Y + GAP + TEXT_HEIGHT);
+  renderCloud(ctx);
 
-  ctx.textBaseline = `alphabetic`;
+  renderText(ctx, `Ура вы победили!`, Cloud.X + GAP, Cloud.Y + GAP);
+  renderText(ctx, `Список результатов:`, Cloud.X + GAP, Cloud.Y + GAP + Font.HEIGHT);
 
-  const maxTime = getMaxTime(times);
-
-  const roundTimes = times.map((i) => {
-    return (i.toFixed(0));
-  });
-
-  for (let i = 0; i < names.length; i++) {
-    ctx.fillStyle = `black`;
-    renderText(
-        ctx,
-        `${names[i]}`,
-        CLOUD_X + GAP + (SPACE_BETWEEN_COLUMNS + BAR_WIDTH) * i,
-        CLOUD_Y + CLOUD_HEIGHT - GAP
-    );
-    renderText(
-        ctx,
-        `${roundTimes[i]}`,
-        CLOUD_X + GAP + (SPACE_BETWEEN_COLUMNS + BAR_WIDTH) * i,
-        CLOUD_Y + CLOUD_HEIGHT - GAP - TEXT_HEIGHT - GAP - (MAX_BAR_HEIGHT * times[i]) / maxTime
-    );
-    if (names[i] === `Вы`) {
-      ctx.fillStyle = `rgba(255, 0, 0, 1)`;
-    } else {
-      ctx.fillStyle = `hsl(255, ${Math.random() * 100}%, 50%)`;
-    }
-    renderRect(
-        ctx,
-        CLOUD_X + GAP + (SPACE_BETWEEN_COLUMNS + BAR_WIDTH) * i,
-        CLOUD_Y + CLOUD_HEIGHT - GAP - TEXT_HEIGHT,
-        BAR_WIDTH,
-        -(MAX_BAR_HEIGHT * times[i]) / maxTime);
-  }
+  renderColumns(ctx, names, times);
 };
