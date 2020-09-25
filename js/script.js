@@ -5,9 +5,8 @@ const RIGHT_SPEED = 2;
 const WIZARD_PROPORTION = 1.337;
 const HEIGHT_DEVIDER = 3;
 
-const fireballSize = 22;
-const wizardWidth = 70;
-
+window.fireballSize = 22;
+window.wizardWidth = 70;
 window.wizardSpeed = 3;
 
 function getFireballSpeed(rightWind) {
@@ -15,13 +14,18 @@ function getFireballSpeed(rightWind) {
 }
 
 function getWizardHeight() {
-  return wizardWidth * WIZARD_PROPORTION;
+  return window.wizardWidth * WIZARD_PROPORTION;
 }
 
 function getWizardX(positionX) {
-  return (positionX - wizardWidth) / 2;
+  return (positionX - window.wizardWidth) / 2;
 }
 
 function getWizardY(positionY) {
   return positionY / HEIGHT_DEVIDER;
 }
+
+window.getFireballSpeed = getFireballSpeed;
+window.getWizardHeight = getWizardHeight;
+window.getWizardX = getWizardX;
+window.getWizardY = getWizardY;

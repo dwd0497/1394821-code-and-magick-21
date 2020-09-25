@@ -11,22 +11,14 @@ const Cloud = {
   X: 100,
   Y: 10,
   BACKGROUND_COLOR: `white`,
-  SHADOW_COLOR: `rgba(0, 0, 0, 0.7)`
+  SHADOW_COLOR: `rgba(0, 0, 0, 0.7)`,
+  TEXT: [`Ура вы победили!`, `Список результатов:`]
 };
 
 const Bar = {
   WIDTH: 40,
   MAX_HEIGHT: 110,
   SPACE_BETWEEN: 50,
-  getPositionX: (i) => {
-    return Cloud.X + GAP + (Bar.SPACE_BETWEEN + Bar.WIDTH) * i;
-  },
-  getPositionY: () => {
-    return Cloud.Y + Cloud.HEIGHT - GAP - Font.HEIGHT;
-  },
-  getHeight: (time, maxTime) => {
-    return (Bar.MAX_HEIGHT * time) / maxTime;
-  }
 };
 
 const Font = {
@@ -37,6 +29,18 @@ const Font = {
 };
 
 const GAP = 20;
+
+function getBarPositionX(i) {
+  return Cloud.X + GAP * 2 + (Bar.SPACE_BETWEEN + Bar.WIDTH) * i;
+}
+
+function getBarPositionY() {
+  return Cloud.Y + Cloud.HEIGHT - GAP - Font.HEIGHT;
+}
+
+function getBarHeight(time, maxTime) {
+  return (Bar.MAX_HEIGHT * time) / maxTime;
+}
 
 function renderRect(ctx, x, y, width, height, color) {
   ctx.fillStyle = color;
@@ -73,14 +77,14 @@ function getColumnColor(name) {
   return name === User.NAME ? User.COLOR : getBlueColor();
 }
 
-function renderColumn(ctx, name, time, i, maxTime) {
+function renderColumn(ctx, name, time, maxTime, i) {
   ctx.fillStyle = getColumnColor(name);
-  renderRect(ctx, Bar.getPositionX(i), Bar.getPositionY(), Bar.WIDTH, -Bar.getHeight(time, maxTime));
+  renderRect(ctx, getBarPositionX(i), getBarPositionY(), Bar.WIDTH, -getBarHeight(time, maxTime));
 }
 
 function renderColumnLabels(ctx, name, time, maxTime, i) {
-  renderText(ctx, name, Bar.getPositionX(i), Bar.getPositionY() + Font.HEIGHT);
-  renderText(ctx, time, Bar.getPositionX(i), Bar.getPositionY() - GAP - Bar.getHeight(time, maxTime)
+  renderText(ctx, name, getBarPositionX(i), getBarPositionY() + Font.HEIGHT);
+  renderText(ctx, time, getBarPositionX(i), getBarPositionY() - GAP - getBarHeight(time, maxTime)
   );
 }
 
@@ -89,7 +93,7 @@ function renderColumns(ctx, names, times) {
   for (let i = 0; i < names.length; i++) {
     const name = names[i];
     const time = times[i].toFixed(0);
-    renderColumn(ctx, name, time, i, maxTime);
+    renderColumn(ctx, name, time, maxTime, i);
     renderColumnLabels(ctx, name, time, maxTime, i);
   }
 }
@@ -98,8 +102,8 @@ window.renderStatistics = function (ctx, names, times) {
 
   renderCloud(ctx);
 
-  renderText(ctx, `Ура вы победили!`, Cloud.X + GAP, Cloud.Y + GAP);
-  renderText(ctx, `Список результатов:`, Cloud.X + GAP, Cloud.Y + GAP + Font.HEIGHT);
+  renderText(ctx, Cloud.TEXT[0], Cloud.X + GAP, Cloud.Y + GAP);
+  renderText(ctx, Cloud.TEXT[1], Cloud.X + GAP, Cloud.Y + GAP + Font.HEIGHT);
 
   renderColumns(ctx, names, times);
 };
