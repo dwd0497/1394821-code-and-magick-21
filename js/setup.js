@@ -10,22 +10,20 @@ const COAT_COLORS = [`rgb(101, 137, 164)`, `rgb(241, 43, 107)`, `rgb(146, 100, 1
 const EYES_COLORS = [`black`, `red`, `blue`, `yellow`, `green`];
 
 function renderWizards() {
-  const similarWizardsList = document.querySelector(`.setup-similar-list`);
   let fragment = document.createDocumentFragment();
 
   for (let i = 0; i < wizards.length; i++) {
-    fragment.appendChild(createWizardDOM(i));
+    fragment.appendChild(createWizard(i));
   }
-  similarWizardsList.appendChild(fragment);
+  document.querySelector(`.setup-similar-list`).appendChild(fragment);
 }
 
-function createWizardDOM(i) {
-  let template = document.querySelector(`#similar-wizard-template`).content.querySelector(`div`);
-  let wizardDOM = template.cloneNode(true);
-  wizardDOM.children[1].textContent = wizards[i].name;
-  wizardDOM.children[0].children[0].children[0].children[0].style.fill = wizards[i].coatColor;
-  wizardDOM.children[0].children[0].children[0].children[2].style.fill = wizards[i].eyesColor;
-  return wizardDOM;
+function createWizard(i) {
+  let wizard = document.querySelector(`#similar-wizard-template`).content.querySelector(`div`).cloneNode(true);
+  wizard.querySelector(`.setup-similar-label`).textContent = wizards[i].name;
+  wizard.querySelector(`.wizard-coat`).style.fill = wizards[i].coatColor;
+  wizard.querySelector(`.wizard-eyes`).style.fill = wizards[i].eyesColor;
+  return wizard;
 }
 
 function getRandomNumber(min, max) {
@@ -35,10 +33,12 @@ function getRandomNumber(min, max) {
 }
 
 function getWizardName() {
-  return `${WIZARDS_NAMES[getRandomNumber(0, 5)]} ${WIZARDS_SURNAMES[getRandomNumber(0, 5)]}`;
+  return getRandomNumber(0, 10) > 5 ?
+    `${WIZARDS_NAMES[getRandomNumber(0, 5)]} ${WIZARDS_SURNAMES[getRandomNumber(0, 5)]}` :
+    `${WIZARDS_SURNAMES[getRandomNumber(0, 5)]} ${WIZARDS_NAMES[getRandomNumber(0, 5)]}`;
 }
 
-function buildWizard() {
+function getWizard() {
   return {
     name: getWizardName(),
     coatColor: COAT_COLORS[getRandomNumber(0, 5)],
@@ -46,14 +46,14 @@ function buildWizard() {
   };
 }
 
-function buildWizards() {
+function getWizards() {
   let wizardsArr = [];
   for (let i = 0; i < 4; i++) {
-    wizardsArr.push(buildWizard());
+    wizardsArr.push(getWizard());
   }
   return wizardsArr;
 }
 
-let wizards = buildWizards();
+let wizards = getWizards();
 
 renderWizards();
