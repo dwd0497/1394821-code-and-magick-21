@@ -64,8 +64,8 @@ function getWizardName() {
 function createRandomWizard() {
   return {
     name: getWizardName(),
-    coatColor: Wizards.COAT_COLORS[getRandomElement(Wizards.COAT_COLORS)],
-    eyesColor: Wizards.EYES_COLORS[getRandomElement(Wizards.EYES_COLORS)]
+    coatColor: getRandomElement(Wizards.COAT_COLORS),
+    eyesColor: getRandomElement(Wizards.EYES_COLORS)
   };
 }
 
