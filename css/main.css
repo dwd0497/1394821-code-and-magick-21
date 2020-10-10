@@ -700,7 +700,7 @@ input[type=radio]:checked + .review-mark-label
     box-shadow: 10px 10px 0 rgba(0, 0, 0, .25);
 }
 
-.setup-open-icon
+.setup-open
 {
     position: absolute;
     z-index: 2;
@@ -708,6 +708,8 @@ input[type=radio]:checked + .review-mark-label
     right: 100px;
 
     cursor: pointer;
+    background-color: transparent;
+    border: none;
 }
 
 .setup-open-icon:hover
@@ -781,6 +783,8 @@ input[type=radio]:checked + .review-mark-label
 
     cursor: pointer;
     transform: translateY(-.3em);
+    background-color: transparent;
+    border: none;
 
     color: #000;
 }
